@@ -41,7 +41,7 @@ export default function () {
               Max number of guests: {place.maxGuest}
             </div>
             <div>
-              <BookingWidget place={place}/>
+              <BookingWidget place={place} />
             </div>
           </div>
           <div className="bg-white -mx-8 px-8 py-8 border-t-4 rounded-xl">

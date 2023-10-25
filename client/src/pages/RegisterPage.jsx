@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,6 +8,7 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [redirect, setRedirect] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
 
   async function registerUser(event, response) {
@@ -20,20 +21,20 @@ export default function RegisterPage() {
         await axios.post("/register", {
           name,
           email,
-          password,
+          password, 
         });
-        alert("Register Succesfull");
-        // .then((response) => {
-        //   if (response.data.message == "User already Exists") {
-        //     toast.error("User already exists");
-        //   }
-        // })
-        // setButtonLoading(false);
+        console.log(name);
+        setRedirect(true);
       } catch (e) {
+        console.log(e);
         alert("Registration failed. Please try again later");
         // setButtonLoading(false);
       }
     }
+  }
+
+  if (redirect) {
+    return <Navigate to={"/login"} />;
   }
 
   return (
@@ -67,10 +68,11 @@ export default function RegisterPage() {
                 setPassword(event.target.value);
               }}
             />
+            {/* <Link to={"/login"}> */}
             <button className="primary">
-              {/* {buttonLoading ? <ButtonLoading /> : <p>Register</p>} */}
               <p>Register</p>
             </button>
+            {/* </Link> */}
             <div className="text-center text-gray-500">
               <p>
                 Already a member?{" "}

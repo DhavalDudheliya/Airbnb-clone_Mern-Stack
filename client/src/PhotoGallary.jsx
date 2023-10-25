@@ -5,7 +5,7 @@ export default function ({ place }) {
 
   if (showAllPhotos) {
     return (
-      <div className={className}>
+      // <div className={className}>
         <div className="absolute inset-0 bg-black min-h-screen">
           <div className="bg-black p-16 grid gap-3">
             <div className="text-center">
@@ -40,7 +40,7 @@ export default function ({ place }) {
               ))}
           </div>
         </div>
-      </div>
+      // </div>
     );
   }
   return (
