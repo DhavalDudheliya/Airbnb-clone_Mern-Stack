@@ -1,9 +1,10 @@
 import { useContext, useState } from "react";
-import { UserContext } from "../UserContext.jsx";
+import { UserContext } from "../components/UserContext";
 import { Link, Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 import PlacesPage from "./PlacesPage.jsx";
-import AccountNav from "../AccountNav.jsx";
+import AccountNav from "../components/AccountNav.jsx";
+import { BASE_URL } from "../services/helper.js";
 
 export default function ProfilePage() {
   const [redirect, setRedirect] = useState(null);
@@ -15,7 +16,7 @@ export default function ProfilePage() {
   }
 
   async function logout() {
-    await axios.post("/logout");
+    await axios.post(`${BASE_URL}/logout`);
     setRedirect("/");
     setUser(null);
   }

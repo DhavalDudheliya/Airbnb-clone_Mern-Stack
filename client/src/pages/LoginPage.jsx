@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
-import { UserContext } from "../UserContext";
+import { UserContext } from "../components/UserContext";
+import { BASE_URL } from "../services/helper";
 // import { Loading } from "react-loading-dot";
 
 export default function LoginPage() {
@@ -18,7 +19,7 @@ export default function LoginPage() {
     } else {
       setButtonLoading(false);
       try {
-        const response = await axios.post("/login", {
+        const response = await axios.post(`${BASE_URL}/login`, {
           email,
           password,
         });

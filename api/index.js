@@ -5,9 +5,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const CookieParser = require("cookie-parser");
 const { default: mongoose } = require("mongoose");
-const User = require("../api/models/User");
-const Place = require("../api/models/place");
-const Booking = require("../api/models/Booking");
+const User = require("./models/User");
+const Place = require("./models/place");
+const Booking = require("./models/Booking");
 const cookieParser = require("cookie-parser");
 const ImageDownloader = require("image-downloader");
 const multer = require("multer");
@@ -17,6 +17,7 @@ const { resolve } = require("path");
 const { rejects } = require("assert");
 require("dotenv").config();
 const PORT = process.env.PORT || 4000;
+const BASE_URL = process.env.BASE_URL;
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = "jaiSwaminarayan";
@@ -29,7 +30,11 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 app.use(
   cors({
     credentials: true,
+    // origin: "https://airbnbclone-clone.onrender.com",
     origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -47,7 +52,7 @@ function getUserDataFromReq(req) {
   });
 }
 
-app.post("/register", async (req, res) => {
+app.post(`/register`, async (req, res) => {
   const { name, email, password } = req.body;
   console.log(name);
   try {
@@ -62,7 +67,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
+app.post(`/login`, async (req, res) => {
   const { email, password } = req.body;
   const UserDoc = await User.findOne({ email });
   if (UserDoc) {
@@ -85,24 +90,27 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", (req, res) => {
+app.get(`/profile`, async (req, res) => {
   const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-      if (err) throw err;
-      const { name, email, _id } = await User.findById(userData.id);
-      res.json({ name, email, _id });
-    });
-  } else {
-    res.json(null);
+  if (!token) {
+    return res.json(null);
+  }
+
+  try {
+    const userData = await jwt.verify(token, jwtSecret);
+    const { name, email, _id } = await User.findById(userData.id);
+    res.json({ name, email, _id });
+  } catch (err) {
+    // Handle error (e.g., token is invalid)
+    res.status(401).json({ error: "Unauthorized" });
   }
 });
 
-app.post("/logout", (req, res) => {
+app.post(`/logout`, (req, res) => {
   res.cookie("token", "").json(true);
 });
 
-app.post("/upload-by-link", async (req, res) => {
+app.post(`/upload-by-link`, async (req, res) => {
   const { link } = req.body;
   const newName = "photo" + Date.now() + ".jpg";
   await ImageDownloader.image({
@@ -113,7 +121,7 @@ app.post("/upload-by-link", async (req, res) => {
 });
 
 const photosMiddleware = multer({ dest: "uploads/" });
-app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
+app.post(`/upload`, photosMiddleware.array("photos", 100), (req, res) => {
   const uploadedFiles = [];
   for (let i = 0; i < req.files.length; i++) {
     const { path, originalname } = req.files[i];
@@ -126,7 +134,7 @@ app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
   res.json(uploadedFiles);
 });
 
-app.post("/places", (req, res) => {
+app.post(`/places`, (req, res) => {
   const { token } = req.cookies;
   const {
     title,
@@ -159,7 +167,7 @@ app.post("/places", (req, res) => {
   });
 });
 
-app.get("/user-places", (req, res) => {
+app.get(`/user-places`, (req, res) => {
   const { token } = req.cookies;
   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
     if (err) throw err;
@@ -168,12 +176,12 @@ app.get("/user-places", (req, res) => {
   });
 });
 
-app.get("/places/:id", async (req, res) => {
+app.get(`/places/:id`, async (req, res) => {
   const { id } = req.params;
   res.json(await Place.findById(id));
 });
 
-app.put("/places", async (req, res) => {
+app.put(`/places`, async (req, res) => {
   const { token } = req.cookies;
   const {
     id,
@@ -210,12 +218,15 @@ app.put("/places", async (req, res) => {
   });
 });
 
-app.get("/places", async (req, res) => {
+app.get(`/places`, async (req, res) => {
   res.json(await Place.find());
 });
 
-app.post("/bookings", async (req, res) => {
+app.post(`/bookings`, async (req, res) => {
   const userData = await getUserDataFromReq(req);
+  if (userData) {
+    res.json({ message: "Please login" });
+  }
   const { place, checkIn, checkOut, numberOfGuests, name, phoneNo, price } =
     req.body;
 
@@ -237,7 +248,7 @@ app.post("/bookings", async (req, res) => {
     });
 });
 
-app.get("/bookings", async (req, res) => {
+app.get(`/bookings`, async (req, res) => {
   const userData = await getUserDataFromReq(req);
   res.json(await Booking.find({ user: userData.id }).populate("place"));
 });

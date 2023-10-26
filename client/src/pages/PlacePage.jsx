@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import BookingWidget from "../BookingWidget";
-import PhotoGallary from "../PhotoGallary";
-import AddressLink from "../AddresLink";
+import BookingWidget from "../components/BookingWidget";
+import PhotoGallary from "../components/PhotoGallary";
+import AddressLink from "../components/AddresLink";
+import { BASE_URL } from "../services/helper";
 
 export default function () {
   const { id } = useParams();
@@ -12,7 +13,7 @@ export default function () {
     if (!id) {
       return;
     }
-    axios.get(`/places/${id}`).then((response) => {
+    axios.get(`${BASE_URL}/places/${id}`).then((response) => {
       setPlace(response.data);
     });
   }, [id]);

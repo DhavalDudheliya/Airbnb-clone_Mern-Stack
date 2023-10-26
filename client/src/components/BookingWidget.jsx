@@ -3,6 +3,7 @@ import { differenceInCalendarDays } from "date-fns";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "./UserContext";
+import { BASE_URL } from "../services/helper";
 
 export default function ({ place }) {
   const [checkIn, setCheckIn] = useState("");
@@ -27,7 +28,7 @@ export default function ({ place }) {
   }
 
   async function bookingPlace() {
-    const response = await axios.post("/bookings", {
+    const response = await axios.post(`${BASE_URL}/bookings`, {
       checkIn,
       checkOut,
       numberOfGuests,

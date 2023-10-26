@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BASE_URL } from "../services/helper";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -18,10 +19,10 @@ export default function RegisterPage() {
     } else {
       // setButtonLoading(true);
       try {
-        await axios.post("/register", {
+        await axios.post(`${BASE_URL}/register`, {
           name,
           email,
-          password, 
+          password,
         });
         console.log(name);
         setRedirect(true);

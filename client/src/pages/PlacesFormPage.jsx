@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import PhotoUploader from "../PhotosUploader";
-import Perks from "../Perks";
-import AccountNav from "../AccountNav";
+import PhotoUploader from "../components/PhotosUploader";
+import Perks from "../components/Perks";
+import AccountNav from "../components/AccountNav";
 import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from "../services/helper";
 
 export default function PlacesFormPage() {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export default function PlacesFormPage() {
     if (!id) {
       return;
     }
-    axios.get("/places/" + id).then((response) => {
+    axios.get(`${BASE_URL}/places/` + id).then((response) => {
       const { data } = response;
       setTitle(data.title);
       setAddress(data.address);
@@ -33,7 +34,7 @@ export default function PlacesFormPage() {
       setExtraInfo(data.extraInfo);
       setCheckIn(data.checkIn);
       setCheckout(data.checkOut);
-      setMaxGuests(data.maxGuest);
+      setMaxGuest(data.maxGuest);
       setPrice(data.price);
     });
   }, [id]);
@@ -71,14 +72,14 @@ export default function PlacesFormPage() {
     };
     if (id) {
       // Update place
-      await axios.put("/places", {
+      await axios.put(`${BASE_URL}/places`, {
         id,
         ...placeData,
       });
       setRedirect(true);
     } else {
       // Add new Place
-      await axios.post("/places", placeData);
+      await axios.post(`${BASE_URL}/places`, placeData);
       setRedirect(true);
     }
   }

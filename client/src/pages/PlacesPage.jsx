@@ -1,12 +1,13 @@
 import { Link, useParams } from "react-router-dom";
-import AccountNav from "../AccountNav";
+import AccountNav from "../components/AccountNav";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { BASE_URL } from "../services/helper";
 
 export default function PlacesPage() {
   const [places, setPlaces] = useState([]);
   useEffect(() => {
-    axios.get("/user-places").then(({ data }) => {
+    axios.get(`${BASE_URL}/user-places`).then(({ data }) => {
       setPlaces(data);
     });
   }, []);
@@ -42,14 +43,14 @@ export default function PlacesPage() {
           places.map((place) => (
             <Link
               to={"/account/places/" + place._id}
-              className="flex bg-gray-100 p-6 rounded-2xl gap-4 m-4"
+              className="grid grid-cols-2 items-start bg-gray-100 p-6 rounded-2xl gap-10 m-4"
             >
-              <div className="w-32 h-32 bg-gray-300 grow shrink-0 rounded-2xl">
+              <div className="bg-gray-300 grow shrink-0 rounded-2xl">
                 {place.photos.length > 0 && (
                   <>
                     <img
                       className="object-cover aspect-square rounded-2xl"
-                      src={"http://localhost:4000/uploads/" + place.photos[0]}
+                      src={`${BASE_URL}/uploads/` + place.photos[0]}
                       alt=""
                     />
                   </>
